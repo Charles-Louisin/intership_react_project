@@ -34,11 +34,11 @@ const App = () => {
                   </RequireAuth>
                 }>
                   <Route index element={<Accueil />} />
-                  <Route path="/dashboard/profile" element={<Profile />} />
-                  <Route path="/dashboard/produits" element={<Produits />} />
-                  <Route path="/dashboard/postes" element={<Postes />} />
-                  <Route path="/dashboard/panier" element={<Panier />} />
-                  <Route path="/dashboard/parametres" element={<Parametres />} />
+                  <Route path="profile" element={<Profile />} />
+                  <Route path="produits" element={<Produits />} />
+                  <Route path="postes" element={<Postes />} />
+                  <Route path="panier" element={<Panier />} />
+                  <Route path="parametres" element={<Parametres />} />
                 </Route>
               </Routes>
             </BrowserRouter>

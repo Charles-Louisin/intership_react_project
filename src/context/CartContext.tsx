@@ -59,7 +59,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return newCart;
     });
     
-    toast.success('Produit ajouté au panier');
+    toast.success(`${product.title} ajouté au panier`);
   };
 
   const removeFromCart = (productId: number) => {

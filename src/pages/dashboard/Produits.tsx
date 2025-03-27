@@ -12,7 +12,8 @@ import { Input } from '../../components/ui/ProductCard/input';
 import { useSearchParams } from 'react-router-dom';
 import ProductDetails from '../../components/products/ProductDetails';
 import { useCart } from '../../context/CartContext';
-import { ShoppingCart, Check } from 'lucide-react';
+import { ShoppingCart, Check, Search } from 'lucide-react';
+import { Skeleton } from '../../components/ui/sidebar/skeleton';
 
 const ProductCard = ({ product }: { product: any }) => {
   const { isExpanded, toggleExpand, animatedHeight, contentRef } = useExpandable();
@@ -20,167 +21,148 @@ const ProductCard = ({ product }: { product: any }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { addToCart, isInCart } = useCart();
 
-  // Calcul du pourcentage du stock (en supposant un stock maximum de 150)
   const stockPercentage = Math.min((product.stock / 150) * 100, 100);
-  // Calcul du pourcentage du rating
   const ratingPercentage = (product.rating / 5) * 100;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
     addToCart(product);
-    // toast.success('Produit ajouté au panier');
+    // toast.success(`${product.title} ajouté au panier`);
+  };
+
+  const handleDetailsClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedProduct(product);
+    setIsModalOpen(true);
   };
 
   return (
     <Card
-      className={`transition-all duration-300 cursor-pointer relative
-        ${isExpanded ?
-          'shadow-2xl z-50 bg-white absolute top-0 left-0 right-0 max-h-none' :
-          'hover:shadow-lg h-full max-h-[500px] md:max-h-[550px]'
-        }`}
+      className="relative overflow-hidden transition-all duration-300 cursor-pointer hover:shadow-md h-full flex flex-col border border-gray-100"
       onClick={toggleExpand}
     >
-      <CardHeader className="p-3 md:p-4">
-        <div className="aspect-[4/3] w-full overflow-hidden rounded-lg">
+      <CardHeader className="p-0">
+        <div className="aspect-square w-full overflow-hidden bg-gray-50">
           <img
             src={product.thumbnail}
             alt={product.title}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
           />
         </div>
-        <div className="flex justify-between items-start mt-4">
-          <div>
-            <CardTitle className="text-xl">{product.title}</CardTitle>
-            <p className="text-sm text-gray-500">{product.brand}</p>
-          </div>
-          <Badge variant="secondary" className="bg-orange-100 text-orange-600">
+      </CardHeader>
+
+      <CardContent className="p-4 flex-1 flex flex-col">
+        <div className="flex justify-between items-start mb-2">
+          <CardTitle className="text-lg font-semibold line-clamp-1">{product.title}</CardTitle>
+          <Badge variant="outline" className="bg-orange-50 text-orange-600 border-orange-200">
             {product.category}
           </Badge>
         </div>
-      </CardHeader>
-      <CardContent className="p-3 md:p-4">
-        <div className="space-y-4">
-          <p className="text-sm text-gray-600 line-clamp-2">
-            {product.description}
-          </p>
+
+        <p className="text-sm text-gray-600 line-clamp-2 mb-3">{product.description}</p>
+
+        <div className="mt-auto space-y-3">
           <div className="flex justify-between items-center">
-            <div className="space-y-1">
-              <p className="text-lg font-bold">${product.price}</p>
+            <div>
+              <p className="text-xl font-bold text-gray-900">${product.price}</p>
               {product.discountPercentage > 0 && (
-                <p className="text-sm text-green-600">-{product.discountPercentage}%</p>
+                <p className="text-xs text-green-600">-{product.discountPercentage}%</p>
               )}
             </div>
+            <p className="text-xs text-gray-500">{product.brand}</p>
           </div>
-
-
 
           <motion.div
             style={{ height: animatedHeight }}
-            transition={{ duration: 0.3 }}
             className="overflow-hidden"
+            transition={{ duration: 0.3 }}
           >
-            <div ref={contentRef} className="space-y-4 pt-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <p className="text-sm text-gray-600">Stock</p>
-                  <div className="w-full">
-                    <Progress
-                      value={stockPercentage}
-                      className="h-2 bg-gray-200"
-                      indicatorClassName="bg-orange-500"
-                    />
-                    <p className="text-xs text-gray-500 mt-1">{product.stock} unités</p>
-                  </div>
+            <div ref={contentRef} className="pt-3 space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <p className="text-xs text-gray-500 mb-1">Stock</p>
+                  <Progress
+                    value={stockPercentage}
+                    className="h-2 bg-gray-100"
+                    indicatorClassName="bg-orange-500"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">{product.stock} unités</p>
                 </div>
 
-                <div className="space-y-2">
-                  <p className="text-sm text-gray-600">Rating</p>
-                  <div className="w-full">
-                    <Progress
-                      value={ratingPercentage}
-                      className="h-2 bg-gray-200"
-                      indicatorClassName="bg-yellow-400"
-                    />
-                    <p className="text-xs text-gray-500 mt-1">{product.rating.toFixed(1)}/5</p>
-                  </div>
+                <div>
+                  <p className="text-xs text-gray-500 mb-1">Note</p>
+                  <Progress
+                    value={ratingPercentage}
+                    className="h-2 bg-gray-100"
+                    indicatorClassName="bg-yellow-400"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">{product.rating.toFixed(1)}/5</p>
                 </div>
               </div>
 
-              <div className="text-sm text-gray-600">
-                <p>SKU: {product.sku}</p>
-                <p>Stock: {product.availabilityStatus}</p>
-                {product.tags && (
-                  <div className="flex gap-2 mt-2 flex-wrap">
-                    {product.tags.map((tag: string, index: number) => (
-                      <Badge key={index} variant="outline">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {selectedProduct && (
-                <ProductDetails
-                  product={selectedProduct}
-                  isOpen={isModalOpen}
-                  onClose={() => {
-                    setIsModalOpen(false);
-                    setSelectedProduct(null);
-                  }}
-                />
+              {product.tags?.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {product.tags.map((tag: string) => (
+                    <Badge key={tag} variant="outline" className="text-xs">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
               )}
 
-              {/* Bouton "Plus de détails" uniquement visible quand la carte est étendue */}
               {isExpanded && (
-                <>
-                  {/* Boutons d'action */}
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={handleAddToCart}
-                      disabled={isInCart(product.id)}
-                      className={`w-full flex items-center justify-center gap-2 ${isInCart(product.id)
-                          ? 'bg-green-500 cursor-not-allowed'
-                          : 'bg-orange-500 hover:bg-orange-600'
-                        } text-white`}
-                    >
-                      {isInCart(product.id) ? (
-                        <>
-                          <Check className="h-5 w-5" />
-                          Déjà ajouté
-                        </>
-                      ) : (
-                        <>
-                          <ShoppingCart className="h-5 w-5" />
-                          Ajouter au panier
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                  <div className="flex justify-center mt-4">
-                    <Button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedProduct(product);
-                        setIsModalOpen(true);
-                      }}
-                      variant="outline"
-                      className="w-full bg-orange-500 text-white hover:bg-orange-600"
-                    >
-                      Plus de détails
-                    </Button>
-                  </div>
-                </>
+                <div className="flex flex-col gap-2 pt-2">
+                  <Button
+                    onClick={handleAddToCart}
+                    disabled={isInCart(product.id)}
+                    className={`w-full gap-2 ${
+                      isInCart(product.id) 
+                        ? 'bg-green-500 hover:bg-green-500' 
+                        : 'bg-orange-500 hover:bg-orange-600'
+                    }`}
+                  >
+                    {isInCart(product.id) ? (
+                      <>
+                        <Check size={16} />
+                        Déjà au panier
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingCart size={16} />
+                        Ajouter
+                      </>
+                    )}
+                  </Button>
+
+                  <Button 
+                    variant="outline"
+                    onClick={handleDetailsClick}
+                    className="border-orange-300 text-orange-600 hover:bg-orange-50"
+                  >
+                    Voir détails
+                  </Button>
+                </div>
               )}
             </div>
           </motion.div>
         </div>
       </CardContent>
+
+      {selectedProduct && (
+        <ProductDetails
+          product={selectedProduct}
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedProduct(null);
+          }}
+        />
+      )}
     </Card>
   );
 };
 
-const ITEMS_PER_PAGE = 30;
+const ITEMS_PER_PAGE = 12;
 
 const Produits = () => {
   const { data, isLoading, error } = useProducts();
@@ -188,30 +170,25 @@ const Produits = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
-  // Garder les paramètres existants lors de la mise à jour
   const updateSearchParams = (newParams: Record<string, string>) => {
     const current = Object.fromEntries(searchParams.entries());
     setSearchParams({ ...current, ...newParams });
   };
 
-  // Utiliser la page depuis l'URL ou défaut à 1
   const currentPage = Number(searchParams.get('page') || '1');
 
-  // Extraire toutes les catégories uniques
   const categories = useMemo(() => {
     if (!data?.products) return [];
-    return Array.from(new Set(data.products.map(product => product.category)));
+    return ['all', ...new Set(data.products.map(p => p.category))];
   }, [data]);
 
-  // Filtrer les produits
   const filteredProducts = useMemo(() => {
     if (!data?.products) return [];
 
     return data.products.filter(product => {
       const matchesSearch = searchTerm === '' ||
         product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.category.toLowerCase().includes(searchTerm.toLowerCase());
+        product.description.toLowerCase().includes(searchTerm.toLowerCase());
 
       const matchesCategory = selectedCategory === 'all' ||
         product.category === selectedCategory;
@@ -220,126 +197,142 @@ const Produits = () => {
     });
   }, [data, searchTerm, selectedCategory]);
 
-  // Calculer la pagination
   const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
   const paginatedProducts = useMemo(() => {
     const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    const end = start + ITEMS_PER_PAGE;
-    return filteredProducts.slice(start, end);
+    return filteredProducts.slice(start, start + ITEMS_PER_PAGE);
   }, [filteredProducts, currentPage]);
 
-  // Fonction de changement de page modifiée
   const handlePageChange = (newPage: number) => {
     updateSearchParams({ page: newPage.toString() });
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Reset la page quand les filtres changent
   useEffect(() => {
-    updateSearchParams({
+    updateSearchParams({ 
       page: '1',
       search: searchTerm,
-      category: selectedCategory
+      category: selectedCategory 
     });
   }, [searchTerm, selectedCategory]);
 
-  // Synchroniser les filtres avec l'URL au chargement
   useEffect(() => {
     const urlSearch = searchParams.get('search') || '';
     const urlCategory = searchParams.get('category') || 'all';
-
     setSearchTerm(urlSearch);
     setSelectedCategory(urlCategory);
   }, []);
 
-  if (isLoading) return <div>Chargement...</div>;
-  if (error) return <div>Une erreur est survenue</div>;
+  if (error) {
+    return (
+      <div className="container mx-auto p-6 text-center">
+        <div className="bg-red-50 text-red-600 p-4 rounded-lg">
+          Erreur lors du chargement des produits
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="container mx-auto p-4 max-w-[1400px]">
-      <h1 className="text-2xl font-bold mb-6">Nos Produits</h1>
+    <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <div className="mb-8 text-center">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Nos Produits</h1>
+        <p className="text-gray-600 max-w-2xl mx-auto">
+          Découvrez notre sélection de produits de qualité
+        </p>
+      </div>
 
-      {/* Barre de recherche et filtres */}
-      <div className="mb-6 w-full md:w-[80%] lg:w-[60%] mx-auto space-y-4 md:space-y-0 md:flex md:items-center md:space-x-4">
-        <div className="relative flex-grow">
+      <div className="flex flex-col md:flex-row gap-4 mb-8">
+        <div className="relative flex-1">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search className="h-5 w-5 text-gray-400" />
+          </div>
           <Input
             type="search"
             placeholder="Rechercher un produit..."
-            className="w-[95%] md:w-full mx-auto pl-10 pr-4 py-2.5 border-2 rounded-xl 
-            focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-sm"
+            className="pl-10 w-full"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <svg
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
         </div>
 
         <select
-          className="w-[95%] md:w-[200px] mx-auto px-4 py-2.5 border-2 rounded-xl 
-          focus:outline-none focus:ring-2 focus:ring-orange-500 shadow-sm"
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
+          className="bg-white border border-gray-300 rounded-md px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
         >
-          <option value="all">Toutes les catégories</option>
-          {categories?.map((category) => (
+          {categories.map(category => (
             <option key={category} value={category}>
-              {category}
+              {category === 'all' ? 'Toutes catégories' : category}
             </option>
           ))}
         </select>
       </div>
 
-      {/* Grille des produits */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-        {paginatedProducts.map((product) => (
-          <div className="w-[100%] md:w-full mx-auto relative" key={product.id}>
-            <div style={{ minHeight: '480px' }}>
-              <ProductCard product={product} />
+      {isLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="space-y-3">
+              <Skeleton className="h-64 w-full rounded-lg" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-4 w-1/2" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-3/4" />
             </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Pagination */}
-      {filteredProducts.length > 0 && (
-        <div className="flex justify-center items-center gap-4 mt-8">
-          <Button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="bg-orange-500 hover:bg-orange-600 text-white"
-          >
-            Précédent
-          </Button>
-          <span className="text-gray-600">
-            Page {currentPage} sur {totalPages}
-          </span>
-          <Button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="bg-orange-500 hover:bg-orange-600 text-white"
-          >
-            Suivant
-          </Button>
+          ))}
         </div>
-      )}
+      ) : (
+        <>
+          {filteredProducts.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {paginatedProducts.map(product => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
 
-      {/* Message si aucun résultat */}
-      {filteredProducts.length === 0 && (
-        <div className="text-center text-gray-500 mt-8">
-          Aucun produit ne correspond à votre recherche
-        </div>
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center gap-4 mt-8">
+                  <Button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    variant="outline"
+                    className="border-orange-300 text-orange-600 hover:bg-orange-50"
+                  >
+                    Précédent
+                  </Button>
+                  
+                  <span className="text-sm text-gray-600">
+                    Page {currentPage} sur {totalPages}
+                  </span>
+                  
+                  <Button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    variant="outline"
+                    className="border-orange-300 text-orange-600 hover:bg-orange-50"
+                  >
+                    Suivant
+                  </Button>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="text-center py-12">
+              <div className="text-gray-500 mb-4">Aucun produit trouvé</div>
+              <Button 
+                onClick={() => {
+                  setSearchTerm('');
+                  setSelectedCategory('all');
+                }}
+                variant="ghost"
+                className="text-orange-600"
+              >
+                Réinitialiser les filtres
+              </Button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
