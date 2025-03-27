@@ -270,16 +270,28 @@ const Produits = () => {
       </div>
 
       {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {[...Array(8)].map((_, i) => (
-            <div key={i} className="space-y-3">
-              <Skeleton className="h-64 w-full rounded-lg" />
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-4 w-1/2" />
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-3/4" />
-            </div>
-          ))}
+        <div className="flex flex-col items-center justify-center space-y-8">
+          {/* Loader moderne avec animation */}
+          <div className="flex items-center justify-center space-x-2">
+            <div className="w-4 h-4 bg-orange-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+            <div className="w-4 h-4 bg-orange-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+            <div className="w-4 h-4 bg-orange-500 rounded-full animate-bounce"></div>
+          </div>
+          
+          {/* Squelettes de chargement */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="border border-gray-100 rounded-lg overflow-hidden">
+                <div className="bg-gray-100 aspect-square w-full"></div>
+                <div className="p-4 space-y-3">
+                  <div className="h-4 bg-gray-100 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-100 rounded w-1/2"></div>
+                  <div className="h-4 bg-gray-100 rounded w-full"></div>
+                  <div className="h-4 bg-gray-100 rounded w-3/4"></div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       ) : (
         <>
