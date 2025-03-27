@@ -8,10 +8,10 @@ import { AuthProvider } from './context/AuthContext';
 import Accueil from './pages/dashboard/Accueil';
 import Produits from './pages/dashboard/Produits';
 import Postes from './pages/dashboard/Postes';
-import Commentaires from './pages/dashboard/Commentaires';
 import Profile from './pages/dashboard/Profile';
 import Parametres from './pages/dashboard/Parametres';
 import Dashboard from './pages/dashboard/Dashboard';
+import Panier from './pages/dashboard/Panier';
 
 const queryClient = new QueryClient();
 
@@ -25,11 +25,11 @@ const App = () => {
             <Route path="/" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />}>
               <Route index element={<Accueil />} />
-              <Route path="profile" element={<Profile />} />
-              <Route path="produits" element={<Produits />} />
-              <Route path="postes" element={<Postes />} />
-              <Route path="commentaires" element={<Commentaires />} />
-              <Route path="parametres" element={<Parametres />} />
+              <Route path="/dashboard/profile" element={<Profile />} />
+              <Route path="/dashboard/produits" element={<Produits />} />
+              <Route path="/dashboard/postes" element={<Postes />} />
+              <Route path="/dashboard/panier" element={<Panier />} />
+              <Route path="/dashboard/parametres" element={<Parametres />} />
             </Route>
           </Routes>
         </BrowserRouter>

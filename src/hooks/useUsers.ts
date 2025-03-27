@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { userApi, queryKeys } from '../api/api';
+import { userApi, queryKeys, authApi } from '../api/api';
 import { LoginCredentials } from '../types/user';
 
 export const useUsers = () => {
@@ -18,6 +18,6 @@ export const useUserById = (id: number) => {
 
 export const useLogin = () => {
     return useMutation({
-        mutationFn: (credentials: LoginCredentials) => userApi.login(credentials)
+        mutationFn: (credentials: LoginCredentials) => authApi.login(credentials)
     });
 };

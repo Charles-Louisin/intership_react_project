@@ -5,8 +5,11 @@ import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '../ui/sidebar/sidebar';
 
+interface LogoutProps {
+    collapsed?: boolean;
+}
 
-const Logout = () => {
+const Logout = ({ collapsed }: LogoutProps) => {
     const { logout } = useAuth();
     const navigate = useNavigate();
 
@@ -16,17 +19,14 @@ const Logout = () => {
     };
 
     return (
-        <SidebarMenu className="flex flex-col justify-end bg-gray-100 p-4">
+        <SidebarMenu>
             <SidebarMenuItem>
-                <SidebarMenuButton onClick={handleLogout} className='text-red-500 font-medium hover:text-red-500 hover:font-bold'>
-                    <div className="flex items-center gap-2">
-                        <LogOut className="h-4 w-4" />
-                        <span>Logout</span>
-                    </div>
+                <SidebarMenuButton onClick={handleLogout} className={`w-full flex items-center ${collapsed ? "justify-center" : "gap-3 px-4"}`}>
+                    <LogOut className="w-10 h-10" />
+                    {!collapsed && <span>Logout</span>}
                 </SidebarMenuButton>
             </SidebarMenuItem>
         </SidebarMenu>
-
     )
 }
 

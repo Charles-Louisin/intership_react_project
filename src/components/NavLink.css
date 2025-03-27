@@ -1,0 +1,29 @@
+.nav-link {
+    text-decoration: none;
+    color: inherit;
+    padding: 10px;
+    width: 100%;
+    height: 55px;
+    transition: none;
+}
+
+/* Supprime le background hover par défaut */
+.nav-link:hover {
+    color: #fff;
+    background-color: rgb(255, 136, 0)
+}
+
+/* Pour la classe active */
+.nav-link.active {
+    /* Ajoutez vos styles pour l'état actif ici */
+    font-weight: bold;
+    color: #fff;
+    background-color: rgb(255, 136, 0);
+}
+
+/* Réinitialisation des styles par défaut */
+.nav-link:focus {
+    font-weight: bold;
+    color: #fff;
+    background-color: rgb(255, 136, 0);
+}

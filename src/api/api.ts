@@ -24,6 +24,9 @@ export const queryKeys = {
     },
     auth: {
         login: ['auth', 'login'] as const,
+    },
+    products: {
+        all: ['products'] as const,
     }
 } as const;
 
@@ -42,6 +45,13 @@ export const userApi = {
 
     getById: async (id: number): Promise<User> => {
         const response = await api.get<User>(`/users/${id}`);
+        return response.data;
+    }
+};
+
+export const productApi = {
+    getAll: async (skip: number = 0, limit: number = 30) => {
+        const response = await api.get<ProductsResponse>(`/products?limit=${limit}&skip=${skip}`);
         return response.data;
     }
 };

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { NavLink, useLocation } from 'react-router-dom';
+import { Link, NavLink as RouterNavLink, useLocation } from 'react-router-dom';
 import {
     Sidebar,
     SidebarContent,
@@ -9,10 +9,12 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    useSidebar
 } from "../ui/sidebar/sidebar";
-import { LucideHome, MessageCircle, MessageSquare, SettingsIcon, ShoppingCartIcon, UserRound } from 'lucide-react';
+import { LucideChevronLeft, LucideChevronRight, LucideHome, LucideShoppingCart, MessageCircle, MessageSquare, SettingsIcon, ShoppingCartIcon, UserRound } from 'lucide-react';
 import Logout from '../auth/Logout';
 import HeaderSide from './HeaderSide';
+import '../NavLink.css'
 
 
 
@@ -34,19 +36,19 @@ const items = [
         icon: MessageSquare,
     },
     {
-        title: "Commentaires",
-        url: "/dashboard/commentaires",
-        icon: MessageCircle,
-    },
-    {
-        title: "Parametres",
-        url: "/dashboard/parametres",
-        icon: SettingsIcon,
+        title: "Mon panier",
+        url: "/dashboard/panier",
+        icon: LucideShoppingCart
     },
     {
         title: "Profile",
         url: "/dashboard/profile",
         icon: UserRound,
+    },
+    {
+        title: "Parametres",
+        url: "/dashboard/parametres",
+        icon: SettingsIcon,
     },
 ]
 
@@ -54,6 +56,8 @@ const items = [
 const AppSidebar = () => {
     const location = useLocation();
     const [activeItem, setActiveItem] = useState(location.pathname);
+    const { state } = useSidebar();
+    const collapsed = state === "collapsed";
 
     useEffect(() => {
         setActiveItem(location.pathname);
@@ -64,28 +68,27 @@ const AppSidebar = () => {
     };
 
     return (
-        <Sidebar className="h-screen">
-            <HeaderSide />
-            <SidebarContent className="flex-1">
+        <Sidebar collapsible="icon">
+            <HeaderSide collapsed={collapsed} />
+            <SidebarContent>
                 <SidebarGroup />
-                <SidebarGroupLabel>Tableau de bord</SidebarGroupLabel>
+                {!collapsed && <SidebarGroupLabel>Tableau de bord</SidebarGroupLabel>}
                 <SidebarGroupContent>
-                    <SidebarMenu className='gap-1'>
+                    <SidebarMenu>
                         {items.map((item) => (
-                            <SidebarMenuItem key={item.title} >
+                            <SidebarMenuItem key={item.title}>
                                 <SidebarMenuButton asChild>
-                                    <NavLink 
+                                    <RouterNavLink 
                                         to={item.url}
+                                        end={item.url === "/dashboard"}
                                         onClick={() => handleItemClick(item.url)}
-                                        className={`flex items-center gap-2 w-full h-14 rounded-none px-4 hover:bg-orange-400 hover:text-white ${
-                                            activeItem === item.url 
-                                            ? "bg-orange-400 text-white font-bold" 
-                                            : "text-gray-500"
-                                        }`}
+                                        className={`nav-link ${
+                                            activeItem === item.url ? "nav-link-active" : ""
+                                        } ${collapsed ? "justify-center w-full" : ""}`}
                                     >
-                                        <item.icon className="h-4 w-4" />
-                                        <span>{item.title}</span>
-                                    </NavLink>
+                                        <item.icon className="w-10 h-10" />
+                                        {!collapsed && <span>{item.title}</span>}
+                                    </RouterNavLink>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
                         ))}
@@ -93,7 +96,7 @@ const AppSidebar = () => {
                 </SidebarGroupContent>
                 <SidebarGroup />
             </SidebarContent>
-            <Logout />
+            <Logout collapsed={collapsed} />
         </Sidebar>
     )
 }
