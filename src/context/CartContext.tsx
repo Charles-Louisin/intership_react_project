@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product } from '../types/product';
 import toast from 'react-hot-toast';
+import { useAuth } from './AuthContext';
 
 interface CartItem extends Product {
   quantity: number;
@@ -19,46 +20,73 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
-    const savedCart = localStorage.getItem('cart');
-    return savedCart ? JSON.parse(savedCart) : [];
-  });
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const { user } = useAuth();
 
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cartItems));
-  }, [cartItems]);
+    if (user) {
+      const userCart = localStorage.getItem(`cart_${user.id}`);
+      setCartItems(userCart ? JSON.parse(userCart) : []);
+    } else {
+      setCartItems([]);
+    }
+  }, [user]);
+
+  const saveCart = (items: CartItem[]) => {
+    if (user) {
+      localStorage.setItem(`cart_${user.id}`, JSON.stringify(items));
+      setCartItems(items);
+    }
+  };
 
   const addToCart = (product: Product) => {
+    if (!user) {
+      toast.error('Veuillez vous connecter');
+      return;
+    }
+    
     setCartItems(prevItems => {
-      const existingItem = prevItems.find(item => item.id === product.id);
-      if (existingItem) {
-        return prevItems.map(item =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
+      const existingItemIndex = prevItems.findIndex(item => item.id === product.id);
+      
+      if (existingItemIndex >= 0) {
+        // Si le produit existe déjà, on garde la quantité actuelle
+        return prevItems;
       }
-      return [...prevItems, { ...product, quantity: 1 }];
+      
+      // Si le produit n'existe pas, on l'ajoute avec une quantité de 1
+      const newCart = [...prevItems, { ...product, quantity: 1 }];
+      saveCart(newCart);
+      return newCart;
     });
+    
     toast.success('Produit ajouté au panier');
   };
 
   const removeFromCart = (productId: number) => {
-    setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
+    setCartItems(prevItems => {
+      const newCart = prevItems.filter(item => item.id !== productId);
+      saveCart(newCart);
+      return newCart;
+    });
   };
 
   const updateQuantity = (productId: number, quantity: number) => {
-    setCartItems(prevItems =>
-      prevItems.map(item =>
+    setCartItems(prevItems => {
+      const newCart = prevItems.map(item =>
         item.id === productId
           ? { ...item, quantity }
           : item
-      )
-    );
+      );
+      saveCart(newCart);
+      return newCart;
+    });
   };
 
   const clearCart = () => {
     setCartItems([]);
+    if (user) {
+      localStorage.removeItem(`cart_${user.id}`);
+    }
   };
 
   const isInCart = (productId: number) => {

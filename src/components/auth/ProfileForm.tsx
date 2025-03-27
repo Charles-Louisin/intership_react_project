@@ -2,52 +2,65 @@
 
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useMutation } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
-import { authApi } from '../../api/api';
-import { LoginCredentials } from '../../types/user';
 import { Button } from '../ui/formulaire/button';
 import { Input } from '../ui/formulaire/input';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "../ui/formulaire/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/formulaire/form";
+import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+
+interface LoginCredentials {
+  username: string;
+  password: string;
+}
 
 export const ProfileForm = () => {
   const navigate = useNavigate();
-  const { login: setAuth } = useAuth();
+  const { login } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
   
   const form = useForm<LoginCredentials>({
-    defaultValues: {
-      username: '',
-      password: ''
-    }
+    defaultValues: { username: '', password: '' }
   });
 
-  const loginMutation = useMutation({
-    mutationFn: authApi.login,
-    onSuccess: (data) => {
-      setAuth(data);
+  const onSubmit = async (data: LoginCredentials) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('https://dummyjson.com/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      if (!response.ok) {
+        throw new Error('Login failed');
+      }
+
+      const userData = await response.json();
+      const sessionId = `session_${userData.id}_${Date.now()}`;
+      
+      const userWithSession = {
+        ...userData,
+        sessionId
+      };
+      
+      login(userWithSession);
       toast.success('Connexion réussie!');
       navigate('/dashboard');
-    },
-    onError: () => {
-      toast.error('Échec de la connexion. Vérifiez vos identifiants.');
+    } catch (error) {
+      toast.error('Identifiants incorrects');
+      console.error('Login error:', error);
+    } finally {
+      setIsLoading(false);
     }
-  });
-
-  const onSubmit = (data: LoginCredentials) => {
-    loginMutation.mutate(data);
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 w-full">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 w-full max-w-md mx-auto">
+        <h1 className="text-2xl font-bold text-center mb-6">Connexion</h1>
+        
+
         <FormField
           control={form.control}
           name="username"
@@ -55,7 +68,7 @@ export const ProfileForm = () => {
             <FormItem>
               <FormLabel>Nom d'utilisateur</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} placeholder="Entrez votre nom d'utilisateur" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -69,7 +82,7 @@ export const ProfileForm = () => {
             <FormItem>
               <FormLabel>Mot de passe</FormLabel>
               <FormControl>
-                <Input type="password" {...field} />
+                <Input type="password" {...field} placeholder="Entrez votre mot de passe" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -79,9 +92,9 @@ export const ProfileForm = () => {
         <Button 
           type="submit" 
           className="w-full"
-          disabled={loginMutation.isPending}
+          disabled={isLoading}
         >
-          {loginMutation.isPending ? 'Connexion...' : 'Se connecter'}
+          {isLoading ? 'Connexion...' : 'Se connecter'}
         </Button>
       </form>
     </Form>
