@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useProducts } from '../../hooks/useProducts';
+import toast from 'react-hot-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/ProductCard/card';
 import { Badge } from '../../components/ui/ProductCard/badge';
 import { Progress } from '../../components/ui/ProductCard/progress';
@@ -10,16 +11,25 @@ import { Product } from '../../types/product';
 import { Input } from '../../components/ui/ProductCard/input';
 import { useSearchParams } from 'react-router-dom';
 import ProductDetails from '../../components/products/ProductDetails';
+import { useCart } from '../../context/CartContext';
+import { ShoppingCart, Check } from 'lucide-react';
 
 const ProductCard = ({ product }: { product: any }) => {
   const { isExpanded, toggleExpand, animatedHeight, contentRef } = useExpandable();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { addToCart, isInCart } = useCart();
 
   // Calcul du pourcentage du stock (en supposant un stock maximum de 150)
   const stockPercentage = Math.min((product.stock / 150) * 100, 100);
   // Calcul du pourcentage du rating
   const ratingPercentage = (product.rating / 5) * 100;
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    addToCart(product);
+    // toast.success('Produit ajouté au panier');
+  };
 
   return (
     <Card
@@ -61,6 +71,8 @@ const ProductCard = ({ product }: { product: any }) => {
               )}
             </div>
           </div>
+
+
 
           <motion.div
             style={{ height: animatedHeight }}
@@ -120,21 +132,46 @@ const ProductCard = ({ product }: { product: any }) => {
               )}
 
               {/* Bouton "Plus de détails" uniquement visible quand la carte est étendue */}
-                {isExpanded && (
-                <div className="flex justify-center">
-                  <Button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedProduct(product);
-                    setIsModalOpen(true);
-                  }}
-                  variant="outline"
-                  className="w-full bg-orange-500 text-white hover:bg-orange-600"
-                  >
-                  Plus de détails
-                  </Button>
-                </div>
-                )}
+              {isExpanded && (
+                <>
+                  {/* Boutons d'action */}
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={handleAddToCart}
+                      disabled={isInCart(product.id)}
+                      className={`w-full flex items-center justify-center gap-2 ${isInCart(product.id)
+                          ? 'bg-green-500 cursor-not-allowed'
+                          : 'bg-orange-500 hover:bg-orange-600'
+                        } text-white`}
+                    >
+                      {isInCart(product.id) ? (
+                        <>
+                          <Check className="h-5 w-5" />
+                          Déjà ajouté
+                        </>
+                      ) : (
+                        <>
+                          <ShoppingCart className="h-5 w-5" />
+                          Ajouter au panier
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  <div className="flex justify-center mt-4">
+                    <Button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedProduct(product);
+                        setIsModalOpen(true);
+                      }}
+                      variant="outline"
+                      className="w-full bg-orange-500 text-white hover:bg-orange-600"
+                    >
+                      Plus de détails
+                    </Button>
+                  </div>
+                </>
+              )}
             </div>
           </motion.div>
         </div>

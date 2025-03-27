@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { Login } from './pages/auth/Login';
 import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
 import Accueil from './pages/dashboard/Accueil';
 import Produits from './pages/dashboard/Produits';
 import Postes from './pages/dashboard/Postes';
@@ -19,20 +20,22 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Toaster position="top-right" />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Login />} />
-            <Route path="/dashboard" element={<Dashboard />}>
-              <Route index element={<Accueil />} />
-              <Route path="/dashboard/profile" element={<Profile />} />
-              <Route path="/dashboard/produits" element={<Produits />} />
-              <Route path="/dashboard/postes" element={<Postes />} />
-              <Route path="/dashboard/panier" element={<Panier />} />
-              <Route path="/dashboard/parametres" element={<Parametres />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
+        <CartProvider>
+          <Toaster position="top-right" />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Login />} />
+              <Route path="/dashboard" element={<Dashboard />}>
+                <Route index element={<Accueil />} />
+                <Route path="/dashboard/profile" element={<Profile />} />
+                <Route path="/dashboard/produits" element={<Produits />} />
+                <Route path="/dashboard/postes" element={<Postes />} />
+                <Route path="/dashboard/panier" element={<Panier />} />
+                <Route path="/dashboard/parametres" element={<Parametres />} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </CartProvider>
       </AuthProvider>
     </QueryClientProvider>
   )

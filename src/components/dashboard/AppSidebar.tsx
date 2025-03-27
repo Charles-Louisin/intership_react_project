@@ -15,7 +15,8 @@ import { LucideChevronLeft, LucideChevronRight, LucideHome, LucideShoppingCart, 
 import Logout from '../auth/Logout';
 import HeaderSide from './HeaderSide';
 import '../NavLink.css'
-
+import { useCart } from '../../context/CartContext';
+import { Badge } from '../ui/ProductCard/badge';
 
 
 // Menu items.
@@ -58,6 +59,7 @@ const AppSidebar = () => {
     const [activeItem, setActiveItem] = useState(location.pathname);
     const { state } = useSidebar();
     const collapsed = state === "collapsed";
+    const { cartCount } = useCart();
 
     useEffect(() => {
         setActiveItem(location.pathname);
@@ -82,11 +84,18 @@ const AppSidebar = () => {
                                         to={item.url}
                                         end={item.url === "/dashboard"}
                                         onClick={() => handleItemClick(item.url)}
-                                        className={`nav-link ${
+                                        className={`nav-link relative ${
                                             activeItem === item.url ? "nav-link-active" : ""
                                         } ${collapsed ? "justify-center w-full" : ""}`}
                                     >
-                                        <item.icon className="w-10 h-10" />
+                                        <div className="relative">
+                                            <item.icon className="w-10 h-10" />
+                                            {item.title === "Mon panier" && cartCount > 0 && (
+                                                <span className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                                                    {cartCount}
+                                                </span>
+                                            )}
+                                        </div>
                                         {!collapsed && <span>{item.title}</span>}
                                     </RouterNavLink>
                                 </SidebarMenuButton>

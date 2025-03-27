@@ -5,6 +5,8 @@ import { useAuth } from '../../context/AuthContext';
 import { Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { getStoredReviews, saveReview } from '../../services/reviewService';
+import { ShoppingCart, Check } from 'lucide-react';
+import { useCart } from '../../context/CartContext';
 
 interface ProductDetailsProps {
   product: Product;
@@ -20,6 +22,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product, isOpen, onClos
   const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [allReviews, setAllReviews] = useState<ProductReview[]>([]);
+  const { addToCart, isInCart } = useCart();
 
   useEffect(() => {
     // Combine API reviews with local reviews
@@ -163,6 +166,31 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product, isOpen, onClos
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Add to Cart Button */}
+        <div className="flex justify-center">
+          <button
+            onClick={() => addToCart(product)}
+            disabled={isInCart(product.id)}
+            className={`flex items-center gap-2 px-6 py-3 rounded-lg text-white transition-colors ${
+              isInCart(product.id) 
+                ? 'bg-green-500 cursor-not-allowed' 
+                : 'bg-orange-500 hover:bg-orange-600'
+            }`}
+          >
+            {isInCart(product.id) ? (
+              <>
+                <Check className="h-5 w-5" />
+                Déjà ajouté
+              </>
+            ) : (
+              <>
+                <ShoppingCart className="h-5 w-5" />
+                Ajouter au panier
+              </>
+            )}
+          </button>
         </div>
 
         {/* Reviews Section */}
