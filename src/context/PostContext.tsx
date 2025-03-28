@@ -45,7 +45,6 @@ const PostContext = createContext<PostContextType | undefined>(undefined);
 export function PostProvider({ children }: { children: React.ReactNode }) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [comments, setComments] = useState<Comment[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchAllPages = async (endpoint: string, limit: number, total: number) => {
@@ -65,10 +64,9 @@ export function PostProvider({ children }: { children: React.ReactNode }) {
         // Récupérer les données en cache si elles existent
         const cachedData = localStorage.getItem('postsData');
         if (cachedData) {
-          const { posts, comments, users } = JSON.parse(cachedData);
+          const { posts, comments } = JSON.parse(cachedData);
           setPosts(posts);
           setComments(comments);
-          setUsers(users);
           setLoading(false);
           return;
         }
@@ -109,7 +107,6 @@ export function PostProvider({ children }: { children: React.ReactNode }) {
 
         setPosts(postsWithUsers);
         setComments(commentsWithUsers);
-        setUsers(allUsers);
       } catch (error) {
         console.error('Error fetching data:', error);
         toast.error('Erreur lors du chargement des données');
