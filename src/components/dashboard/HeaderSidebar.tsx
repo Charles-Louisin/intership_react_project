@@ -1,10 +1,10 @@
 import { useAuth } from '../../context/AuthContext';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const HeaderSidebar = () => {
   const { user } = useAuth();
 
-   const [currentUser, setCurrentUser] = useState<any>(null);
+   const [ setCurrentUser] = useState<any>(null);
   
     useEffect(() => {
       const user = JSON.parse(localStorage.getItem('currentUser') || '{}');

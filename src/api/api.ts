@@ -1,6 +1,13 @@
 import axios from 'axios';
 import { LoginCredentials, User } from '../types/user';
 
+interface ProductsResponse {
+    products: Array<any>;
+    total: number;
+    skip: number;
+    limit: number;
+}
+
 const api = axios.create({
     baseURL: 'https://dummyjson.com',
     headers: {

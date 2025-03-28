@@ -25,7 +25,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product, isOpen, onClos
   const { addToCart, isInCart } = useCart();
 
 
-   const [currentUser, setCurrentUser] = useState<any>(null);
+   const [setCurrentUser] = useState<any>(null);
   
     useEffect(() => {
       const user = JSON.parse(localStorage.getItem('currentUser') || '{}');

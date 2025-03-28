@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useCart } from '../../context/CartContext';
 import { Trash2, Plus, Minus, CreditCard, Phone, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
