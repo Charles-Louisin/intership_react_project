@@ -38,6 +38,7 @@ const ProductCard = ({ product }: { product: any }) => {
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
     addToCart(product);
+    setTimeout(() => addToCart(product), 0);
     // toast.success(`${product.title} ajouté au panier`);
   };
 
@@ -87,6 +88,7 @@ const ProductCard = ({ product }: { product: any }) => {
             style={{ height: animatedHeight }}
             className="overflow-hidden"
             transition={{ duration: 0.3 }}
+            onLayoutAnimationComplete={() => contentRef.current && contentRef.current.scrollHeight}
           >
             <div ref={contentRef} className="pt-3 space-y-4">
               <div className="grid grid-cols-2 gap-3">
