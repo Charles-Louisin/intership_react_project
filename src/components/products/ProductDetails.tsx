@@ -24,14 +24,6 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product, isOpen, onClos
   const [allReviews, setAllReviews] = useState<ProductReview[]>([]);
   const { addToCart, isInCart } = useCart();
 
-
-   const [setCurrentUser] = useState<any>(null);
-  
-    useEffect(() => {
-      const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
-      setCurrentUser(user);
-    }, []);
-
   useEffect(() => {
     // Combine API reviews with local reviews
     const storedReviews = getStoredReviews(product.id);
@@ -44,21 +36,6 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product, isOpen, onClos
     
     setAllReviews(sortedReviews);
   }, [product.id, product.reviews, localReviews]);
-
-  useEffect(() => {
-        const handleProfileUpdate = (event: CustomEvent) => {
-          const updatedUser = event.detail;
-          setCurrentUser(updatedUser);
-          // Mettre à jour l'état local avec la nouvelle photo
-          // Par exemple : setUserImage(updatedUser.image)
-        };
-    
-        window.addEventListener('profileUpdate', handleProfileUpdate as EventListener);
-    
-        return () => {
-          window.removeEventListener('profileUpdate', handleProfileUpdate as EventListener);
-        };
-      }, []);
 
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
