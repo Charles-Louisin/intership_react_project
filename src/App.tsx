@@ -17,6 +17,7 @@ import { RequireAuth } from './components/RequireAuth';
 import { ProfileForm } from './components/auth/ProfileForm';
 import { ErrorBoundary } from './utils/errorBoundary';
 import NotFound from './pages/NotFound';
+import { Suspense } from 'react';
 
 const queryClient = new QueryClient();
 
@@ -29,30 +30,45 @@ const App = () => {
             <Toaster position="top-right" />
             <BrowserRouter>
               <ErrorBoundary>
-                <Routes>
-                  <Route path="/" element={<ProfileForm />} />
-                  <Route path="/dashboard" element={
-                    <RequireAuth>
-                      <Dashboard />
-                    </RequireAuth>
-                  }>
-                    <Route index element={<Accueil />} />
-                    <Route path="profile" element={<Profile />} />
-                    <Route path="produits" element={<Produits />} />
-                    <Route path="postes" element={<Postes />} />
-                    <Route path="panier" element={<Panier />} />
-                    <Route path="parametres" element={<Parametres />} />
-                  </Route>
-                  <Route path="/dashboard/*" element={<Navigate to="/" replace />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
+                <Suspense fallback={
+                  <div className="min-h-screen flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+                  </div>
+                }>
+                  <Routes>
+                    <Route path="/" element={<ProfileForm />} />
+                    <Route
+                      path="/dashboard"
+                      element={
+                        <RequireAuth>
+                          <Suspense fallback={
+                            <div className="min-h-screen flex items-center justify-center">
+                              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+                            </div>
+                          }>
+                            <Dashboard />
+                          </Suspense>
+                        </RequireAuth>
+                      }
+                    >
+                      <Route index element={<Accueil />} />
+                      <Route path="profile" element={<Profile />} />
+                      <Route path="produits" element={<Produits />} />
+                      <Route path="postes" element={<Postes />} />
+                      <Route path="panier" element={<Panier />} />
+                      <Route path="parametres" element={<Parametres />} />
+                    </Route>
+                    <Route path="/dashboard/*" element={<Navigate to="/" replace />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </Suspense>
               </ErrorBoundary>
             </BrowserRouter>
           </PostProvider>
         </CartProvider>
       </AuthProvider>
     </QueryClientProvider>
-  )
-}
+  );
+};
 
-export default App
+export default App;
