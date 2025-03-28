@@ -1,22 +1,17 @@
 /** @jsxImportSource react */
 import { createContext, useContext, useState, useEffect } from 'react';
 import { safeSetItem } from '../utils/storage';
+import { UserProfile } from '../types/user';
 
-interface User {
-  id: number;
-  firstName: string;
-  lastName: string;
-  image: string;
-  username: string;
+interface User extends UserProfile {
   sessionId: string;
-  email?: string;
 }
 
 interface AuthContextType {
-  user: any;
-  login: (data: any) => void;
+  user: User | null;
+  login: (data: User) => void;
   logout: () => void;
-  updateUser: (data: any) => void; // Ajout de cette fonction
+  updateUser: (data: Partial<User>) => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -27,7 +22,7 @@ export const AuthContext = createContext<AuthContextType>({
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState(() => {
+  const [user, setUser] = useState<User | null>(() => {
     try {
       const savedUser = localStorage.getItem('currentUser');
       const savedProfile = savedUser ? JSON.parse(savedUser) : null;
@@ -70,12 +65,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const updateUser = async (userData: any) => {
+  const updateUser = async (userData: Partial<User>) => {
     try {
       const updatedUser = {
         ...user,
         ...userData,
-      };
+      } as User;
       
       // Sauvegarder les données essentielles uniquement
       const essentialData = {

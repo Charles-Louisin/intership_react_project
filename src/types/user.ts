@@ -12,3 +12,19 @@ export interface User {
     token: string;
     image: string;
 }
+
+export interface UserProfile {
+  id: number;
+  firstName: string;
+  lastName: string;
+  maidenName?: string;
+  age?: number;
+  gender?: string;
+  email: string;
+  phone?: string;
+  username: string;
+  birthDate?: string;
+  image: string;
+  bloodGroup?: string;
+  [key: string]: any; // Allow string indexing
+}

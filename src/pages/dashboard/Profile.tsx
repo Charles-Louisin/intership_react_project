@@ -4,6 +4,22 @@ import { Navigate } from 'react-router-dom';
 import { Loader2, Edit, Save, X, Camera, Mail, Phone, Calendar, MapPin, GraduationCap, Briefcase, CreditCard, Coins, ShoppingCart, FileText, MessageSquare } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { safeSetItem } from '../../utils/storage';
+import { UserProfile } from '../../types/user';
+
+interface FormField {
+  color: string;
+  type: string;
+}
+
+interface FormFields {
+  [key: string]: FormField;
+}
+
+const formFields: FormFields = {
+  firstName: { color: 'text-blue-500', type: 'text' },
+  lastName: { color: 'text-green-500', type: 'text' },
+  // ...add other fields as needed
+};
 
 interface UserData {
   id: number;
@@ -237,6 +253,13 @@ const Profile = () => {
       toast.error('Erreur lors de la mise à jour du profil');
     } finally {
       setIsLoading(prev => ({ ...prev, saving: false }));
+    }
+  };
+
+  const handleInputChange = (field: keyof UserProfile, value: string) => {
+    if (user) {
+      const updatedUser = { ...user, [field]: value };
+      updateUser(updatedUser);
     }
   };
 
