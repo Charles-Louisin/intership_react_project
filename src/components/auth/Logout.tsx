@@ -5,8 +5,8 @@ import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '../ui/sidebar/sidebar';
 
-interface LogoutProps {
-    collapsed?: boolean;
+export interface LogoutProps {
+  collapsed: boolean;
 }
 
 const Logout = ({ collapsed }: LogoutProps) => {

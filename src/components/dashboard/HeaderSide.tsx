@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
-interface HeaderSideProps {
-    collapsed?: boolean;
+export interface HeaderSideProps {
+  collapsed: boolean;
 }
 
 const HeaderSide = ({ collapsed }: HeaderSideProps) => {

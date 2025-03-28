@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+/** @jsxImportSource react */
+import { createContext, useContext, useState, useEffect } from 'react';
 import { safeSetItem } from '../utils/storage';
 
 interface User {
@@ -8,6 +9,7 @@ interface User {
   image: string;
   username: string;
   sessionId: string;
+  email?: string;
 }
 
 interface AuthContextType {
