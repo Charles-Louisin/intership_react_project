@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,6 +9,28 @@ interface HeaderSideProps {
 const HeaderSide = ({ collapsed }: HeaderSideProps) => {
     const { user } = useAuth();
     const navigate = useNavigate();
+
+    const [currentUser, setCurrentUser] = useState<any>(null);
+      
+        useEffect(() => {
+          const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+          setCurrentUser(user);
+        }, []);
+    
+        useEffect(() => {
+                const handleProfileUpdate = (event: CustomEvent) => {
+                  const updatedUser = event.detail;
+                  setCurrentUser(updatedUser);
+                  // Mettre à jour l'état local avec la nouvelle photo
+                  // Par exemple : setUserImage(updatedUser.image)
+                };
+            
+                window.addEventListener('profileUpdate', handleProfileUpdate as EventListener);
+            
+                return () => {
+                  window.removeEventListener('profileUpdate', handleProfileUpdate as EventListener);
+                };
+              }, []);
 
     return (
         <div className="w-full">
