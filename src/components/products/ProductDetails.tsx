@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Product } from '../../types/product';
+import { Product, ProductReview } from '../../types/product';
 import Modal from '../ui/modal/Modal';
 import { useAuth } from '../../context/AuthContext';
 import { Loader2 } from 'lucide-react';
@@ -65,12 +65,16 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product, isOpen, onClos
     setIsSubmitting(true);
     
     try {
-      const newReview = {
+      const newReview: ProductReview = {
+        id: Date.now(),
+        userId: user?.id || 0,
+        productId: product.id,
         rating,
         comment,
         date: new Date().toISOString().split('T')[0],
-        reviewerName: user ? `${user.firstName} ${user.lastName}` || 'Anonyme' : 'Anonyme', // Supposant que user.name existe
-        reviewerEmail: user?.email || ''
+        reviewerName: user ? `${user.firstName} ${user.lastName}` || 'Anonyme' : 'Anonyme',
+        reviewerEmail: user?.email || '',
+        createdAt: new Date().toISOString()
       };
 
       // Simuler un délai d'envoi
@@ -101,7 +105,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product, isOpen, onClos
               className="w-full h-[400px] object-cover rounded-xl shadow-sm"
             />
             <div className="grid grid-cols-4 gap-3 mt-4">
-              {product.images.slice(0, 4).map((image, index) => (
+              {product.images.slice(0, 4).map((image: string, index: number) => (
                 <img
                   key={index}
                   src={image}

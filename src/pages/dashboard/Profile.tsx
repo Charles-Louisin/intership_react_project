@@ -4,22 +4,7 @@ import { Navigate } from 'react-router-dom';
 import { Loader2, Edit, Save, X, Camera, Mail, Phone, Calendar, MapPin, GraduationCap, Briefcase, CreditCard, Coins, ShoppingCart, FileText, MessageSquare } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { safeSetItem } from '../../utils/storage';
-import { UserProfile } from '../../types/user';
 
-interface FormField {
-  color: string;
-  type: string;
-}
-
-interface FormFields {
-  [key: string]: FormField;
-}
-
-const formFields: FormFields = {
-  firstName: { color: 'text-blue-500', type: 'text' },
-  lastName: { color: 'text-green-500', type: 'text' },
-  // ...add other fields as needed
-};
 
 interface UserData {
   id: number;
@@ -61,6 +46,7 @@ interface UserData {
     wallet: string;
     network: string;
   };
+  [key: string]: any; // Add index signature
 }
 
 interface Purchase {
@@ -208,13 +194,15 @@ const Profile = () => {
     setIsLoading(prev => ({ ...prev, saving: true }));
     try {
       if (userData && editedData) {
-        const updatedData = { ...userData };
+        const updatedData = { ...userData } as UserData;
         
         Object.entries(editedData).forEach(([key, value]) => {
           if (key.includes('.')) {
             const [parent, child] = key.split('.');
-            if (!updatedData[parent]) updatedData[parent] = {};
-            updatedData[parent][child] = value;
+            if (!updatedData[parent]) {
+              updatedData[parent] = {} as any;
+            }
+            (updatedData[parent] as any)[child] = value;
           } else {
             updatedData[key] = value;
           }
@@ -232,7 +220,7 @@ const Profile = () => {
 
         await updateUser(essentialData);
 
-        const success = await safeSetItem(`userProfile_${user.id}`, updatedData);
+        const success = await safeSetItem(`userProfile_${user?.id}`, updatedData);
         if (!success) {
           toast.error('Certaines données n\'ont pas pu être sauvegardées', {
             duration: 3000,
@@ -253,13 +241,6 @@ const Profile = () => {
       toast.error('Erreur lors de la mise à jour du profil');
     } finally {
       setIsLoading(prev => ({ ...prev, saving: false }));
-    }
-  };
-
-  const handleInputChange = (field: keyof UserProfile, value: string) => {
-    if (user) {
-      const updatedUser = { ...user, [field]: value };
-      updateUser(updatedUser);
     }
   };
 

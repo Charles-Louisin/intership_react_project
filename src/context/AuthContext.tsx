@@ -1,17 +1,18 @@
 /** @jsxImportSource react */
 import { createContext, useContext, useState, useEffect } from 'react';
 import { safeSetItem } from '../utils/storage';
-import { UserProfile } from '../types/user';
+import { User } from '../types';
 
-interface User extends UserProfile {
+interface AuthUser extends User {
   sessionId: string;
+  email: string;
 }
 
 interface AuthContextType {
-  user: User | null;
-  login: (data: User) => void;
+  user: AuthUser | null;
+  login: (data: AuthUser) => void;
   logout: () => void;
-  updateUser: (data: Partial<User>) => void;
+  updateUser: (data: Partial<AuthUser>) => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -22,7 +23,7 @@ export const AuthContext = createContext<AuthContextType>({
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(() => {
+  const [user, setUser] = useState<AuthUser | null>(() => {
     try {
       const savedUser = localStorage.getItem('currentUser');
       const savedProfile = savedUser ? JSON.parse(savedUser) : null;
@@ -50,7 +51,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     window.dispatchEvent(event);
   };
 
-  const login = (userData: User) => {
+  const login = (userData: AuthUser) => {
     setUser(userData);
     localStorage.setItem('currentUser', JSON.stringify(userData));
   };
@@ -65,12 +66,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const updateUser = async (userData: Partial<User>) => {
+  const updateUser = async (userData: Partial<AuthUser>) => {
     try {
       const updatedUser = {
         ...user,
         ...userData,
-      } as User;
+      } as AuthUser;
       
       // Sauvegarder les données essentielles uniquement
       const essentialData = {
@@ -95,7 +96,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
       }
       
-      setUser(essentialData);
+      setUser(prevUser => ({
+        ...prevUser,
+        ...essentialData,
+        sessionId: prevUser?.sessionId || ''
+      } as AuthUser));
       dispatchProfileUpdate(essentialData);
       
     } catch (error) {

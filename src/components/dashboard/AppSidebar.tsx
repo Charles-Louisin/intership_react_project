@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { Link, NavLink as RouterNavLink, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react'
+import { NavLink as RouterNavLink, useLocation } from 'react-router-dom';
 import {
     Sidebar,
     SidebarContent,
@@ -11,7 +11,7 @@ import {
     SidebarMenuItem,
     useSidebar
 } from "../ui/sidebar/sidebar";
-import { LucideChevronLeft, LucideChevronRight, LucideHome, LucideShoppingCart, MessageSquare, Settings, User } from 'lucide-react';
+import { LucideHome, LucideShoppingCart, MessageSquare, Settings, User } from 'lucide-react';
 import Logout from '../auth/Logout';
 import HeaderSide from './HeaderSide';
 import { useCart } from '../../context/CartContext';
@@ -66,7 +66,7 @@ const AppSidebar = () => {
         setActiveItem(url);
         // Ferme le sidebar uniquement en version mobile (moins de 768px)
         if (window.innerWidth < 768) {
-            setState("collapsed");
+            setState(true);
         }
     };
 

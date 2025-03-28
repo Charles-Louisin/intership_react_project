@@ -1,54 +1,32 @@
-export interface ProductDimensions {
-    width: number;
-    height: number;
-    depth: number;
-}
-
-export interface ProductReview {
-    rating: number;
-    comment: string;
-    date: string;
-    reviewerName: string;
-    reviewerEmail: string;
-}
-
-export interface ProductMeta {
-    createdAt: string;
-    updatedAt: string;
-    barcode: string;
-    qrCode: string;
-}
-
 export interface Product {
-    id: number;
-    title: string;
-    description: string;
-    price: number;
-    discountPercentage: number;
-    rating: number;
-    stock: number;
-    brand: string;
-    category: string;
-    thumbnail: string;
-    images: string[];
-    tags: string[];
-    sku: string;
-    weight: number;
-    dimensions: ProductDimensions;
-    warrantyInformation: string;
-    shippingInformation: string;
-    availabilityStatus: string;
-    reviews: ProductReview[];
-    returnPolicy: string;
-    minimumOrderQuantity: number;
-    meta: ProductMeta;
+  id: number;
+  title: string;
+  description: string;
+  price: number;
+  category: string;
+  thumbnail: string;
+  rating: number;
+  stock: number;
+  [key: string]: any;
 }
 
 export interface ProductsResponse {
-    products: Product[];
-    total: number;
-    skip: number;
-    limit: number;
+  products: Product[];
+  total: number;
+  skip: number;
+  limit: number;
+}
+
+export interface ProductReview {
+  id: number;
+  userId: number;
+  productId: number;
+  rating: number;
+  comment: string;
+  createdAt: string;
+  date: string;
+  reviewerName: string;
+  reviewerEmail: string;
 }
 
 export enum ProductFilterType {

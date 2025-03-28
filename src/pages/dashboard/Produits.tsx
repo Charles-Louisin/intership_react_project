@@ -1,19 +1,30 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useProducts } from '../../hooks/useProducts';
-import toast from 'react-hot-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/ProductCard/card';
 import { Badge } from '../../components/ui/ProductCard/badge';
 import { Progress } from '../../components/ui/ProductCard/progress';
 import { Button } from '../../components/ui/ProductCard/button';
 import { useExpandable } from '../../hooks/use-expandable';
-import { Product } from '../../types/product';
 import { Input } from '../../components/ui/ProductCard/input';
 import { useSearchParams } from 'react-router-dom';
 import ProductDetails from '../../components/products/ProductDetails';
 import { useCart } from '../../context/CartContext';
 import { ShoppingCart, Check, Search } from 'lucide-react';
-import { Skeleton } from '../../components/ui/sidebar/skeleton';
+import { Product, ProductsResponse } from '../../types';
+
+// Fix category mapping
+const getCategories = (data: ProductsResponse): string[] => {
+  return ['all', ...new Set(data.products.map((p: Product) => p.category))];
+};
+
+// Fix product filtering
+const filterProducts = (data: ProductsResponse, selectedCategory: string): Product[] => {
+  if (!data?.products) return [];
+  return data.products.filter((product) => 
+    product.category === selectedCategory || selectedCategory === 'all'
+  );
+};
 
 const ProductCard = ({ product }: { product: any }) => {
   const { isExpanded, toggleExpand, animatedHeight, contentRef } = useExpandable();
@@ -179,22 +190,13 @@ const Produits = () => {
 
   const categories = useMemo(() => {
     if (!data?.products) return [];
-    return ['all', ...new Set(data.products.map(p => p.category))];
+    return getCategories(data);
   }, [data]);
 
   const filteredProducts = useMemo(() => {
     if (!data?.products) return [];
 
-    return data.products.filter(product => {
-      const matchesSearch = searchTerm === '' ||
-        product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchTerm.toLowerCase());
-
-      const matchesCategory = selectedCategory === 'all' ||
-        product.category === selectedCategory;
-
-      return matchesSearch && matchesCategory;
-    });
+    return filterProducts(data, selectedCategory);
   }, [data, searchTerm, selectedCategory]);
 
   const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
@@ -261,7 +263,7 @@ const Produits = () => {
           onChange={(e) => setSelectedCategory(e.target.value)}
           className="bg-white border border-gray-300 rounded-md px-4 py-2 focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
         >
-          {categories.map(category => (
+          {categories.map((category: string) => (
             <option key={category} value={category}>
               {category === 'all' ? 'Toutes catégories' : category}
             </option>

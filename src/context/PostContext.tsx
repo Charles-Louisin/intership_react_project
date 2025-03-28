@@ -7,6 +7,7 @@ interface User {
   lastName: string;
   image: string;
   username: string;
+  isVerified: boolean;
 }
 
 interface Post {
@@ -21,6 +22,7 @@ interface Post {
   };
   user?: User;
   views?: number;
+  createdAt: string;
 }
 
 interface Comment {

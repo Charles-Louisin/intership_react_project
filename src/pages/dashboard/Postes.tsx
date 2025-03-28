@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { usePosts } from '../../context/PostContext';
 import { Send, MessageSquare, Heart, ThumbsUp, ThumbsDown, ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Postes = () => {
-  const { posts, comments, addComment, loading, likePost, dislikePost } = usePosts();
+  const { posts, comments, addComment, loading} = usePosts();
   const [newComment, setNewComment] = useState('');
-  const [selectedPost, setSelectedPost] = useState<number | null>(null);
   const [expandedComments, setExpandedComments] = useState<Record<number, boolean>>({});
   const [currentUser, setCurrentUser] = useState<any>(null);
 
@@ -20,8 +19,6 @@ const Postes = () => {
       const handleProfileUpdate = (event: CustomEvent) => {
         const updatedUser = event.detail;
         setCurrentUser(updatedUser);
-        // Mettre à jour l'état local avec la nouvelle photo
-        // Par exemple : setUserImage(updatedUser.image)
       };
   
       window.addEventListener('profileUpdate', handleProfileUpdate as EventListener);
@@ -47,16 +44,6 @@ const Postes = () => {
     } catch (error) {
       toast.error('Erreur lors de l\'ajout du commentaire');
     }
-  };
-
-  const handleLike = (postId: number) => {
-    likePost(postId);
-    toast.success('Post liké');
-  };
-
-  const handleDislike = (postId: number) => {
-    dislikePost(postId);
-    toast.success('Post disliké');
   };
 
   if (loading) {
@@ -148,14 +135,12 @@ const Postes = () => {
                 <div className="mt-4 flex items-center justify-between pt-3 border-t border-gray-100">
                   <div className="flex space-x-4">
                     <button
-                      onClick={() => handleLike(post.id)}
                       className="flex items-center space-x-1 text-gray-500 hover:text-orange-500"
                     >
                       <ThumbsUp className="h-5 w-5" />
                       <span className="text-sm">{post.reactions.likes || 0}</span>
                     </button>
                     <button
-                      onClick={() => handleDislike(post.id)}
                       className="flex items-center space-x-1 text-gray-500 hover:text-orange-500"
                     >
                       <ThumbsDown className="h-5 w-5" />

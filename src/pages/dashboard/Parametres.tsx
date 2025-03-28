@@ -9,10 +9,10 @@ const Parametres = () => {
     return <Navigate to="/login" replace />;
   }
 
-  const getUserSettings = () => {
-    const settings = localStorage.getItem(`settings_${user.id}`);
-    return settings ? JSON.parse(settings) : defaultSettings;
-  };
+  // const getUserSettings = () => {
+  //   const settings = localStorage.getItem(`settings_${user.id}`);
+  //   return settings ? JSON.parse(settings) : defaultSettings;
+  // };
 
   const saveUserSettings = (settings: any) => {
     localStorage.setItem(`settings_${user.id}`, JSON.stringify(settings));

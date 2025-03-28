@@ -1,3 +1,22 @@
+export const isStorageAvailable = () => {
+  try {
+    localStorage.setItem('test', 'test');
+    localStorage.removeItem('test');
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+export const safeParse = <T>(value: string | null, fallback: T): T => {
+  if (!value) return fallback;
+  try {
+    return JSON.parse(value) as T;
+  } catch (e) {
+    return fallback;
+  }
+};
+
 export const safeSetItem = async (key: string, value: any) => {
   const compressData = (data: any) => {
     if (typeof data !== 'object' || data === null) return data;

@@ -1,4 +1,4 @@
-import React from 'react'
+/** @jsxImportSource react */
 import './index.css'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
@@ -15,6 +15,7 @@ import Dashboard from './pages/dashboard/Dashboard';
 import Panier from './pages/dashboard/Panier';
 import { RequireAuth } from './components/RequireAuth';
 import { ProfileForm } from './components/auth/ProfileForm';
+import { ErrorBoundary } from './utils/errorBoundary';
 
 const queryClient = new QueryClient();
 
@@ -26,21 +27,23 @@ const App = () => {
           <PostProvider>
             <Toaster position="top-right" />
             <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<ProfileForm />} />
-                <Route path="/dashboard" element={
-                  <RequireAuth>
-                    <Dashboard />
-                  </RequireAuth>
-                }>
-                  <Route index element={<Accueil />} />
-                  <Route path="profile" element={<Profile />} />
-                  <Route path="produits" element={<Produits />} />
-                  <Route path="postes" element={<Postes />} />
-                  <Route path="panier" element={<Panier />} />
-                  <Route path="parametres" element={<Parametres />} />
-                </Route>
-              </Routes>
+              <ErrorBoundary>
+                <Routes>
+                  <Route path="/" element={<ProfileForm />} />
+                  <Route path="/dashboard" element={
+                    <RequireAuth>
+                      <Dashboard />
+                    </RequireAuth>
+                  }>
+                    <Route index element={<Accueil />} />
+                    <Route path="profile" element={<Profile />} />
+                    <Route path="produits" element={<Produits />} />
+                    <Route path="postes" element={<Postes />} />
+                    <Route path="panier" element={<Panier />} />
+                    <Route path="parametres" element={<Parametres />} />
+                  </Route>
+                </Routes>
+              </ErrorBoundary>
             </BrowserRouter>
           </PostProvider>
         </CartProvider>
