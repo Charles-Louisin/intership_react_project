@@ -1,7 +1,7 @@
 /** @jsxImportSource react */
 import './index.css'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
@@ -16,6 +16,7 @@ import Panier from './pages/dashboard/Panier';
 import { RequireAuth } from './components/RequireAuth';
 import { ProfileForm } from './components/auth/ProfileForm';
 import { ErrorBoundary } from './utils/errorBoundary';
+import NotFound from './pages/NotFound';
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,8 @@ const App = () => {
                     <Route path="panier" element={<Panier />} />
                     <Route path="parametres" element={<Parametres />} />
                   </Route>
+                  <Route path="/dashboard/*" element={<Navigate to="/" replace />} />
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
               </ErrorBoundary>
             </BrowserRouter>
