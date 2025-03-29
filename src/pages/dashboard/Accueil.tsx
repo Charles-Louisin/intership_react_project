@@ -146,7 +146,7 @@ const TimeFrameSelector = ({ timeFrame, onChange }: { timeFrame: string; onChang
   <ToggleButtonGroup
     value={timeFrame}
     exclusive
-    onChange={(_, value) => value && onChange(value)}
+    onChange={(_: React.MouseEvent<HTMLElement>, value: string) => value && onChange(value)}
     sx={{ mb: 3 }}
   >
     <ToggleButton value="day" sx={{ 
